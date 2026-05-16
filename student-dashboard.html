@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard — PTC</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">🎓</div>
+      <div>
+        <h3>Student Portal</h3>
+        <p id="sidebarStudentName">Loading...</p>
+      </div>
+    </div>
+<nav>
+       <ul class="sidebar-menu">
+         <li><a class="nav-link active" onclick="switchSection('dashboardSection', this)">📊 Dashboard</a></li>
+         <li><a class="nav-link" onclick="switchSection('profileSection', this)">👤 My Profile</a></li>
+         <li><a class="nav-link" onclick="switchSection('requirementsSection', this)">📄 Submit Requirements</a></li>
+         <li><a class="nav-link" onclick="switchSection('subjectsSection', this)">📖 My Subjects</a></li>
+         <li><a class="nav-link notif-link" onclick="switchSection('notificationsSection', this)">
+           🔔 Notifications <span class="notif-badge" id="notifBadge" style="display:none;"></span>
+         </a></li>
+       </ul>
+     </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="studentLogout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <section id="dashboardSection" class="content-section active">
+      <div class="page-header">
+        <div>
+          <h1>Welcome, <span id="studentNameDisplay">Student</span>!</h1>
+          <p class="header-sub" id="enrollmentInfo"></p>
+        </div>
+        <div class="user-avatar" id="studentAvatar">S</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Enrollment Status</div>
+          <div class="stat-value"><span id="enrollmentStatus" class="badge badge-pending">Pending</span></div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-label">Subjects Enrolled</div>
+          <div class="stat-value" id="subjectsCount">0</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-label">Requirements</div>
+          <div class="stat-value"><span id="requirementsStatus" class="badge badge-pending">Pending</span></div>
+        </div>
+        <div class="stat-card info">
+          <div class="stat-label">Enrollment Type</div>
+          <div class="stat-value" id="enrollmentTypeCard" style="font-size:1.1em;">—</div>
+        </div>
+      </div>
+
+      <!-- Enrollment Progress -->
+      <div class="table-container" style="margin-bottom:24px;">
+        <h3>📈 Enrollment Progress</h3>
+        <div class="progress-steps" id="progressSteps"></div>
+      </div>
+
+      <!-- Announcements -->
+      <div class="table-container">
+        <h3>📢 Announcements</h3>
+        <div id="announcementsList">
+          <div class="announcement-item">
+            <div class="ann-date">May 15, 2026</div>
+            <div class="ann-title">Enrollment Period Open</div>
+            <div class="ann-body">The enrollment period for AY 2026–2027 is now open. Please submit all required documents on or before June 1, 2026.</div>
+          </div>
+          <div class="announcement-item">
+            <div class="ann-date">May 10, 2026</div>
+            <div class="ann-title">Document Submission Guidelines</div>
+            <div class="ann-body">All documents must be in PDF or JPG format. Maximum file size is 5MB per document. Incomplete submissions will be marked as rejected.</div>
+          </div>
+          <div class="announcement-item">
+            <div class="ann-date">May 5, 2026</div>
+            <div class="ann-title">New Courses Available</div>
+            <div class="ann-body">PTC is now offering new courses in Healthcare Services and Engineering Technology for AY 2026–2027.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PROFILE ===== -->
+    <section id="profileSection" class="content-section">
+      <div class="page-header">
+        <div><h1>My Profile</h1><p class="header-sub">Keep your personal information up to date.</p></div>
+        <div class="user-avatar" id="profileAvatar">S</div>
+      </div>
+
+      <!-- Profile Status Card -->
+      <div class="profile-status-card" id="profileStatusCard"></div>
+
+      <div id="profileMsg"></div>
+      <div class="form-card">
+        <form onsubmit="handleSaveProfile(event)">
+          <h3 class="form-section-title">Personal Information</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" id="profileName" required>
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" id="profileEmail" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" id="profilePhone" placeholder="+63 912 345 6789">
+            </div>
+            <div class="form-group">
+              <label>Date of Birth</label>
+              <input type="date" id="profileDOB">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Gender</label>
+              <select id="profileGender">
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Civil Status</label>
+              <select id="profileCivilStatus">
+                <option value="">Select status</option>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Widowed">Widowed</option>
+              </select>
+            </div>
+          </div>
+          <h3 class="form-section-title" style="margin-top:20px;">Address</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Street Address</label>
+              <input type="text" id="profileAddress">
+            </div>
+            <div class="form-group">
+              <label>City / Municipality</label>
+              <input type="text" id="profileCity">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Province</label>
+              <input type="text" id="profileProvince">
+            </div>
+            <div class="form-group">
+              <label>Postal Code</label>
+              <input type="text" id="profilePostal">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-submit">Save Profile</button>
+            <button type="button" class="btn-secondary" onclick="switchSection('dashboardSection',null)">Cancel</button>
+          </div>
+        </form>
+      </div>
+</section>
+
+<!-- ===== REQUIREMENTS ===== -->
+      <section id="requirementsSection" class="content-section">
+        <div class="page-header">
+          <div><h1>Submit Requirements</h1><p class="header-sub" id="reqSubtitle">Upload your enrollment documents below.</p></div>
+        </div>
+
+        <!-- Step indicator -->
+        <div class="step-indicator" id="reqStepIndicator">
+          <div class="step active" id="step1Indicator"><span>1</span> Upload</div>
+          <div class="step-line"></div>
+          <div class="step" id="step2Indicator"><span>2</span> Review</div>
+          <div class="step-line"></div>
+          <div class="step" id="step3Indicator"><span>3</span> Submitted</div>
+        </div>
+
+        <!-- Step 1: Upload -->
+        <div id="reqStep1">
+          <div id="requirementsMsg"></div>
+          <div class="form-card">
+            <form id="requirementsForm" onsubmit="showSubmissionReview(event)">
+              <h3 class="form-section-title">Course Selection</h3>
+              <div class="form-group">
+                <label>Select Course <span style="color:var(--danger)">*</span></label>
+                <select id="courseSelect" required>
+                  <option value="">-- Select a Course --</option>
+                  <option value="CS">Computer Science</option>
+                  <option value="BM">Business Management</option>
+                  <option value="HC">Healthcare Services</option>
+                  <option value="ENG">Engineering Technology</option>
+                </select>
+              </div>
+              <h3 class="form-section-title" style="margin-top:20px;">Document Upload</h3>
+              <div id="docUploadFields"></div>
+              <div class="form-actions">
+                <button type="submit" class="btn-submit">Review & Submit →</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Step 2: Review before submission -->
+        <div id="reqStep2" style="display:none;">
+          <div class="form-card">
+            <h3 class="form-section-title">📋 Review Your Submission</h3>
+            <p style="color:var(--muted);margin-bottom:20px;">Please review the files below before final submission. Click "Back" to make changes.</p>
+            <div id="reviewSummary"></div>
+            <div class="form-actions" style="margin-top:20px;">
+              <button class="btn-secondary" onclick="backToUpload()">← Back</button>
+              <button class="btn-confirm" onclick="finalSubmitRequirements()">✅ Confirm & Submit</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Submitted -->
+        <div id="reqStep3" style="display:none;">
+          <div class="form-card text-center">
+            <div style="font-size:4em;margin-bottom:15px;">✅</div>
+            <h3 style="color:var(--success);margin-bottom:10px;">Requirements Submitted!</h3>
+            <p style="color:var(--muted);margin-bottom:25px;">Your documents have been submitted and are now under review. You will be notified once the status changes.</p>
+            <span class="badge badge-under-review" style="font-size:1em;padding:10px 20px;">Under Review</span>
+            <div style="margin-top:25px;">
+              <button class="btn-submit" onclick="switchSection('notificationsSection',null)">View Notifications</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+     <!-- ===== SUBJECTS ===== -->
+    <section id="subjectsSection" class="content-section">
+      <div class="page-header">
+        <div><h1>My Subjects</h1><p class="header-sub">Your enrolled subjects for this term.</p></div>
+      </div>
+      <div id="subjectsMsg"></div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr><th>Code</th><th>Subject Name</th><th>Units</th><th>Instructor</th><th>Schedule</th><th>Room</th><th>Status</th></tr>
+          </thead>
+          <tbody id="studentSubjectsBody">
+            <tr><td colspan="7"><div class="empty-state"><div style="font-size:3em;margin-bottom:10px;">📚</div><h3>No subjects available yet</h3><p>Subjects will appear here after your enrollment is approved by the admin.</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== NOTIFICATIONS ===== -->
+    <section id="notificationsSection" class="content-section">
+      <div class="page-header">
+        <div><h1>Notifications</h1><p class="header-sub">Updates on your enrollment and document status.</p></div>
+        <button class="btn-secondary" style="padding:8px 16px;font-size:.85em;" onclick="markAllRead()">Mark All Read</button>
+      </div>
+      <div id="notificationsList"></div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

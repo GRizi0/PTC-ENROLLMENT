@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enrollment Type — PTC</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="auth-body">
+  <div class="auth-wrapper wide">
+    <a href="student-login.html" class="back-link">← Back</a>
+    <div class="selection-card">
+      <div class="auth-logo">📋</div>
+      <h2>Select Enrollment Type</h2>
+      <p class="selection-sub">Choose the category that best describes your enrollment status.</p>
+      <div class="selection-grid">
+        <div class="selection-item" onclick="selectType('Freshmen')">
+          <div class="sel-icon">👨🎓</div>
+          <h3>Freshmen</h3>
+          <p>First-time enrollees entering PTC for the first time.</p>
+        </div>
+        <div class="selection-item" onclick="selectType('Regular')">
+          <div class="sel-icon">📚</div>
+          <h3>Regular</h3>
+          <p>Continuing students returning for the next term.</p>
+        </div>
+        <div class="selection-item" onclick="selectType('Transferee')">
+          <div class="sel-icon">🔄</div>
+          <h3>Transferee</h3>
+          <p>Students transferring from another institution.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-icon">✅</div>
+      <h3>Confirm Enrollment Type</h3>
+      <p>You selected: <strong id="typeDisplay" style="color:var(--secondary);"></strong></p>
+      <p style="color:var(--muted);font-size:.92em;">Please confirm your enrollment category. You can update your profile and submit requirements after proceeding.</p>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+        <button class="btn-confirm" onclick="confirmEnrollment()">Confirm & Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

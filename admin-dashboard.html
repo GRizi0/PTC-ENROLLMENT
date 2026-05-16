@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — PTC</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dashboard-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">🔐</div>
+      <div>
+        <h3>PTC Admin Portal</h3>
+        <p>Administrator</p>
+      </div>
+    </div>
+    <nav>
+      <ul class="sidebar-menu">
+        <li><a class="nav-link active" onclick="switchSection('overviewSection', this)">📊 Dashboard Overview</a></li>
+        <li><a class="nav-link" onclick="switchSection('studentsSection', this)">👥 Manage Students</a></li>
+        <li><a class="nav-link" onclick="switchSection('coursesSection', this)">🎓 Courses & Subjects</a></li>
+        <li><a class="nav-link" onclick="switchSection('verificationSection', this)">✅ Document Verification</a></li>
+        <li><a class="nav-link" onclick="switchSection('applicationsSection', this)">📋 Applications</a></li>
+        <li><a class="nav-link notif-link" onclick="switchSection('adminNotifSection', this)">
+          🔔 Notifications <span class="notif-badge" id="adminNotifBadge" style="display:none;"></span>
+        </a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="adminLogout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- ===== OVERVIEW ===== -->
+    <section id="overviewSection" class="content-section active">
+      <div class="page-header">
+        <div><h1>Admin Dashboard</h1><p class="header-sub">System overview and analytics</p></div>
+        <div class="user-avatar">A</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Applicants</div>
+          <div class="stat-value" id="totalStudents">0</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-label">Pending Applications</div>
+          <div class="stat-value" id="pendingApps">0</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-label">Approved</div>
+          <div class="stat-value" id="approvedStudents">0</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-label">Rejected</div>
+          <div class="stat-value" id="rejectedApps">0</div>
+        </div>
+        <div class="stat-card info">
+          <div class="stat-label">Enrolled Students</div>
+          <div class="stat-value" id="enrolledStudents">0</div>
+        </div>
+      </div>
+
+      <!-- Recent Notifications -->
+      <div class="table-container" style="margin-bottom:24px;">
+        <h3>🔔 Recent Notifications</h3>
+        <div id="adminRecentNotifs"></div>
+      </div>
+
+      <!-- Recent Enrollments -->
+      <div class="table-container">
+        <h3>📋 Recent Enrollments</h3>
+        <table>
+          <thead><tr><th>Student ID</th><th>Name</th><th>Type</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody id="recentEnrollmentsBody">
+            <tr><td colspan="5"><div class="empty-state"><h3>No recent enrollments</h3></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== MANAGE STUDENTS ===== -->
+    <section id="studentsSection" class="content-section">
+      <div class="page-header">
+        <div><h1>Manage Students</h1><p class="header-sub">View, edit, and manage all student records.</p></div>
+      </div>
+      <div id="studentMsgArea"></div>
+      <div class="search-filter">
+        <input type="text" id="studentSearch" placeholder="Search by name, email, or ID..." oninput="filterStudents()">
+        <select id="statusFilterStudent" onchange="filterStudents()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <select id="typeFilterStudent" onchange="filterStudents()">
+          <option value="">All Types</option>
+          <option value="Freshmen">Freshmen</option>
+          <option value="Regular">Regular</option>
+          <option value="Transferee">Transferee</option>
+        </select>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr><th>Student ID</th><th>Full Name</th><th>Email</th><th>Type</th><th>Status</th><th>Date Enrolled</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="studentMgmtBody">
+            <tr><td colspan="7"><div class="empty-state"><h3>No students found</h3></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== COURSES & SUBJECTS ===== -->
+    <section id="coursesSection" class="content-section">
+      <div class="page-header">
+        <div><h1>Courses & Subjects</h1><p class="header-sub">Manage available courses and subjects.</p></div>
+      </div>
+      <div id="courseMsgArea"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex-wrap:wrap;">
+        <!-- Add Course -->
+        <div class="form-card">
+          <h3 class="form-section-title">➕ Add Course</h3>
+          <form onsubmit="handleAddCourse(event)">
+            <div class="form-group">
+              <label>Course Code</label>
+              <input type="text" id="courseCode" placeholder="e.g. CS" required>
+            </div>
+            <div class="form-group">
+              <label>Course Name</label>
+              <input type="text" id="courseName" placeholder="e.g. Computer Science" required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <input type="text" id="courseDesc" placeholder="Short description">
+            </div>
+            <button type="submit" class="btn-submit">Add Course</button>
+          </form>
+        </div>
+
+        <!-- Add Subject -->
+        <div class="form-card">
+          <h3 class="form-section-title">➕ Add Subject</h3>
+          <form onsubmit="handleAddSubject(event)">
+            <div class="form-group">
+              <label>Subject Code</label>
+              <input type="text" id="subjectCode" placeholder="e.g. CS101" required>
+            </div>
+            <div class="form-group">
+              <label>Subject Name</label>
+              <input type="text" id="subjectName" placeholder="e.g. Introduction to Programming" required>
+            </div>
+            <div class="form-group">
+              <label>Units</label>
+              <input type="number" id="subjectUnits" placeholder="3" min="1" max="6" required>
+            </div>
+            <button type="submit" class="btn-submit">Add Subject</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Course List -->
+      <div class="table-container" style="margin-top:24px;">
+        <h3>📚 Course List</h3>
+        <table>
+          <thead><tr><th>Code</th><th>Name</th><th>Description</th><th>Actions</th></tr></thead>
+          <tbody id="courseListBody">
+            <tr><td colspan="4"><div class="empty-state"><h3>No courses added</h3></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Subject List -->
+      <div class="table-container">
+        <h3>📖 Subject List</h3>
+        <table>
+          <thead><tr><th>Code</th><th>Name</th><th>Units</th><th>Actions</th></tr></thead>
+          <tbody id="subjectListBody">
+            <tr><td colspan="4"><div class="empty-state"><h3>No subjects added</h3></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== DOCUMENT VERIFICATION ===== -->
+    <section id="verificationSection" class="content-section">
+      <div class="page-header">
+        <div><h1>Document Verification</h1><p class="header-sub">Review and verify uploaded student documents.</p></div>
+      </div>
+      <div id="verificationMsgArea"></div>
+      <div class="search-filter">
+        <input type="text" id="docSearch" placeholder="Search by student name..." oninput="filterDocuments()">
+        <select id="docStatusFilter" onchange="filterDocuments()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div id="verificationListContainer"></div>
+    </section>
+
+    <!-- ===== APPLICATIONS ===== -->
+    <section id="applicationsSection" class="content-section">
+      <div class="page-header">
+        <div><h1>Enrollment Applications</h1><p class="header-sub">Review and process all enrollment applications.</p></div>
+      </div>
+      <div id="applicationMsgArea"></div>
+      <div class="search-filter">
+        <input type="text" id="appSearch" placeholder="Search by student name..." oninput="filterApplications()">
+        <select id="appStatusFilter" onchange="filterApplications()">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <select id="appTypeFilter" onchange="filterApplications()">
+          <option value="">All Types</option>
+          <option value="Freshmen">Freshmen</option>
+          <option value="Regular">Regular</option>
+          <option value="Transferee">Transferee</option>
+        </select>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr><th>Student ID</th><th>Name</th><th>Type</th><th>Date Applied</th><th>Documents</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="applicationTableBody">
+            <tr><td colspan="7"><div class="empty-state"><h3>No applications found</h3></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== ADMIN NOTIFICATIONS ===== -->
+    <section id="adminNotifSection" class="content-section">
+      <div class="page-header">
+        <div><h1>Notifications</h1><p class="header-sub">System alerts and student activity updates.</p></div>
+        <button class="btn-secondary" style="padding:8px 16px;font-size:.85em;" onclick="markAdminNotifRead()">Mark All Read</button>
+      </div>
+      <div id="adminNotificationsList"></div>
+    </section>
+
+  </main>
+
+  <!-- Edit Student Modal -->
+  <div id="editStudentModal" class="modal">
+    <div class="modal-box" style="max-width:500px;">
+      <h3>Edit Student Status</h3>
+      <div style="text-align:left;margin:20px 0;">
+        <p style="margin-bottom:15px;"><strong>Student:</strong> <span id="editStudentName"></span></p>
+        <p style="margin-bottom:15px;"><strong>Current Status:</strong> <span id="editCurrentStatus" class="badge"></span></p>
+        <div class="form-group">
+          <label>New Status</label>
+          <select id="editStatusSelect" style="width:100%;padding:10px;border:2px solid var(--border);border-radius:6px;">
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+        <button class="btn-confirm" onclick="saveStudentEdit()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Student Modal -->
+  <div id="viewStudentModal" class="modal">
+    <div class="modal-box" style="max-width:600px;max-height:80vh;overflow-y:auto;">
+      <div class="modal-icon">👤</div>
+      <h3>Student Details</h3>
+      <div style="text-align:left;margin:25px 0;">
+        <div style="margin-bottom:15px;padding:15px;background:var(--light);border-radius:8px;">
+          <div><strong>Full Name:</strong> <span id="viewStudentName"></span></div>
+          <div><strong>Student ID:</strong> <span id="viewStudentId"></span></div>
+          <div><strong>Email:</strong> <span id="viewStudentEmail"></span></div>
+          <div><strong>Phone:</strong> <span id="viewStudentPhone"></span></div>
+          <div><strong>Enrollment Type:</strong> <span id="viewStudentType"></span></div>
+          <div><strong>Course:</strong> <span id="viewStudentCourse"></span></div>
+          <div><strong>Current Status:</strong> <span id="viewStudentStatus" class="badge"></span></div>
+          <div><strong>Date Enrolled:</strong> <span id="viewDateEnrolled"></span></div>
+        </div>
+        <h4 style="margin:15px 0 10px;color:var(--primary);">Requirements Status:</h4>
+        <div id="viewStudentRequirements"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeViewStudentModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Document Modal -->
+  <div id="viewDocModal" class="modal">
+    <div class="modal-box" style="max-width:650px;max-height:80vh;overflow-y:auto;">
+      <div class="modal-icon">📄</div>
+      <h3>Document Submission</h3>
+      <div style="text-align:left;margin:25px 0;">
+        <div style="margin-bottom:15px;padding:15px;background:var(--light);border-radius:8px;">
+          <div style="margin-bottom:8px;"><strong>Student Name:</strong> <span id="viewDocStudent"></span></div>
+          <div style="margin-bottom:8px;"><strong>Student ID:</strong> <span id="viewDocStudentId"></span></div>
+          <div><strong>Submission Date:</strong> <span id="viewDocDate"></span></div>
+        </div>
+        <h4 style="margin:15px 0 10px;color:var(--primary);">Submitted Requirements:</h4>
+        <div id="viewDocRequirementsList"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeViewDocModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
